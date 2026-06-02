@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuthStatus } from '../hooks/useData';
-import { COLORS, platformColor } from '../lib/brand';
+import { COLORS } from '../lib/brand';
 import { StatusDot } from './ui';
 import MetricsSection    from './MetricsSection';
 import EngagementChart   from './EngagementChart';
@@ -10,7 +10,6 @@ import BrandAnalysis     from './BrandAnalysis';
 import ContentCalendar   from './ContentCalendar';
 import { TrendingTopics, QuickActions } from './Widgets';
 
-// ── Inline global styles injected once ────────────────────────
 const GLOBAL_STYLE = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,7 +21,6 @@ const GLOBAL_STYLE = `
   @keyframes shimmer { 0%,100%{opacity:0.5} 50%{opacity:1} }
 `;
 
-// ── Two-bolt logo mark ─────────────────────────────────────────
 function BoltMark() {
   const bolt = {
     display: 'block', width: 9, height: 22,
@@ -37,10 +35,15 @@ function BoltMark() {
   );
 }
 
-// ── Top bar ────────────────────────────────────────────────────
 function TopBar({ syncing }) {
   const { data: authStatus } = useAuthStatus();
   const platforms = authStatus?.status || {};
+
+  function handleLogout() {
+    localStorage.removeItem('dr_token');
+    localStorage.removeItem('dr_user');
+    window.location.href = '/';
+  }
 
   return (
     <header style={{
@@ -77,12 +80,27 @@ function TopBar({ syncing }) {
             {syncing ? 'SINCRONIZANDO...' : 'EN LÍNEA'}
           </span>
         </div>
+        <button
+          onClick={handleLogout}
+          style={{
+            background: '#ff6b6b22',
+            border: '1px solid #ff6b6b44',
+            color: '#ff6b6b',
+            fontSize: 10,
+            fontFamily: "'Space Mono',monospace",
+            padding: '4px 10px',
+            borderRadius: 4,
+            cursor: 'pointer',
+            letterSpacing: 1,
+          }}
+        >
+          SALIR
+        </button>
       </div>
     </header>
   );
 }
 
-// ── Footer ─────────────────────────────────────────────────────
 function Footer() {
   return (
     <footer style={{
@@ -101,7 +119,6 @@ function Footer() {
   );
 }
 
-// ── Section wrapper ────────────────────────────────────────────
 function Section({ id, label, children }) {
   return (
     <section id={id} aria-label={label} style={{ display: 'contents' }}>
@@ -110,14 +127,12 @@ function Section({ id, label, children }) {
   );
 }
 
-// ── Main Dashboard ─────────────────────────────────────────────
 export default function Dashboard() {
   const [syncing, setSyncing] = useState(false);
 
   return (
     <>
       <style>{GLOBAL_STYLE}</style>
-
       <div style={{
         background: '#080808',
         color: COLORS.textPrimary,
@@ -127,7 +142,6 @@ export default function Dashboard() {
       }}>
         <TopBar syncing={syncing} />
 
-        {/* Scanline overlay */}
         <div aria-hidden="true" style={{
           position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0,
           backgroundImage: 'linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px)',
@@ -136,12 +150,10 @@ export default function Dashboard() {
 
         <main style={{ position: 'relative', zIndex: 1, flex: 1, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 18 }}>
 
-          {/* KPIs */}
           <Section id="metrics" label="Métricas totales por plataforma">
             <MetricsSection />
           </Section>
 
-          {/* Row 2: engagement + ideas */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <Section id="engagement" label="Engagement por plataforma">
               <EngagementChart />
@@ -151,7 +163,6 @@ export default function Dashboard() {
             </Section>
           </div>
 
-          {/* Row 3: comments + brand */}
           <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16 }}>
             <Section id="comments" label="Últimos comentarios de audiencia">
               <AudienceComments />
@@ -161,7 +172,6 @@ export default function Dashboard() {
             </Section>
           </div>
 
-          {/* Row 4: trending + calendar + actions */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
             <TrendingTopics />
             <Section id="calendar" label="Parrilla de contenido mensual">
