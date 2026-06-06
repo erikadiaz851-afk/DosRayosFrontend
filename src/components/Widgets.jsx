@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Card, CardTitle, ActionBtn } from './ui';
 import { useTopics } from '../hooks/useData';
 import { COLORS } from '../lib/brand';
@@ -55,34 +56,25 @@ export function TrendingTopics() {
 
 // ── Quick Actions ──────────────────────────────────────────────
 export function QuickActions({ onSyncing }) {
+  // Agrega este import al inicio del archivo (si no está):
+  // import { useNavigate } from 'react-router-dom';
+  const navigate = useNavigate();
+
   async function handleSync() {
     onSyncing?.(true);
-    try {
-      await api.syncAll();
-    } finally {
-      onSyncing?.(false);
-    }
+    try { await api.syncAll(); }
+    finally { onSyncing?.(false); }
   }
 
   return (
     <Card>
       <CardTitle icon="ti-bolt">acciones rápidas</CardTitle>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <ActionBtn icon="ti-bulb" onClick={() => window.location.href = '#ideas'}>
-          generar ideas de contenido
-        </ActionBtn>
-        <ActionBtn icon="ti-heart" accent={COLORS.azulCielo} onClick={() => window.location.href = '#comments'}>
-          analizar sentimiento audiencia
-        </ActionBtn>
-        <ActionBtn icon="ti-calendar" onClick={() => window.location.href = '#calendar'}>
-          planear parrilla semanal
-        </ActionBtn>
-        <ActionBtn icon="ti-sparkles" accent={COLORS.azulCielo} onClick={() => window.location.href = '#brand'}>
-          análisis de marca completo
-        </ActionBtn>
-        <ActionBtn icon="ti-refresh" onClick={handleSync}>
-          sincronizar plataformas
-        </ActionBtn>
+        <ActionBtn icon="ti-heart"      accent={COLORS.azulCielo} onClick={() => navigate('/sentimientos')}>Analizar sentimiento audiencia →</ActionBtn>
+        <ActionBtn icon="ti-calendar"                             onClick={() => navigate('/parrilla')}>Planear parrilla semanal →</ActionBtn>
+        <ActionBtn icon="ti-sparkles"   accent={COLORS.azulCielo} onClick={() => navigate('/analisis-marca')}>Análisis de marca completo →</ActionBtn>
+        <ActionBtn icon="ti-bulb"                                 onClick={() => navigate('/parrilla')}>Generar ideas de contenido →</ActionBtn>
+        <ActionBtn icon="ti-refresh"                              onClick={handleSync}>Sincronizar plataformas →</ActionBtn>
       </div>
     </Card>
   );
